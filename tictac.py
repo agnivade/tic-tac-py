@@ -57,9 +57,8 @@ class StupidBot (Player):
 class NiceBot (Player):
     def getMove(self, b):
         #checking whether there are any nearly finished row/col/diag so as to put a single mark to win
-        (r, c) = self.check_for_finish(b, self.symbol)        
-        if (r, c) != (-1, -1):
-            return r, c
+        if self.check_for_finish(b, self.symbol) != (-1, -1):        
+            return self.check_for_finish(b, self.symbol)
         
         #find the symbol of opponent
         symbol_opponent = ''
@@ -70,15 +69,14 @@ class NiceBot (Player):
                 break
                 
         #checking whether opposition is nearly finished and therefore stopping him/her
-        (r, c) = self.check_for_finish(b, symbol_opponent)
-        if (r, c) != (-1, -1):
-            return r, c
+        if self.check_for_finish(b, symbol_opponent) != (-1, -1):        
+            return self.check_for_finish(b, symbol_opponent)
 
         if self.check_empty(b): #if this is the first move, return top left pos
-            return 0, 0
+            return (0, 0)
         else:
             if b[1][1] == ' ': #if center is empty, fill that first
-                return 1, 1
+                return (1, 1)
             else:
                 if b[1][1] == self.symbol and self.get_empty_noncorner(b) != (-1, -1): #if center is ours and non corner is free put there
                     return self.get_empty_noncorner(b)
@@ -90,7 +88,7 @@ class NiceBot (Player):
                 while True:
                     r,c = random.choice(range(b.boardSize)),random.choice(range(b.boardSize))
                     if b[r][c] == ' ':
-                        return r,c    
+                        return (r, c)    
 
     def get_empty_corner(self, b):
         """ Return the first empty corner of the board
@@ -99,7 +97,7 @@ class NiceBot (Player):
         for corner in corners:
             if b[corner[0]][corner[1]] == ' ':
                 return corner
-        return -1, -1
+        return (-1, -1)
                 
     def get_empty_noncorner(self, b):
         """ Returns the first empty non corner of the board
@@ -108,7 +106,7 @@ class NiceBot (Player):
             return 0, 1
         if b[1][0] == ' ' and b[1][2] == ' ':
             return 1, 0
-        return -1, -1
+        return (-1, -1)
         
     def check_empty(self, b):
         """ Checks whether the board is empty or not
@@ -124,7 +122,7 @@ class NiceBot (Player):
         """
         isBreak = False
         for i in range(b.boardSize): #checking all rows
-            if (b[i].count(symbol), b[i].count(' ')) == (2, 1):
+            if (b[i].count(symbol), b[i].count(' ')) == (b.boardSize-1, 1):
                 isBreak = True
                 break
         if(isBreak): #if found return
@@ -132,18 +130,18 @@ class NiceBot (Player):
         c = []
         for i in range(b.boardSize): #checking all columns
             c = [b[j][i] for j in range(b.boardSize)]
-            if (c.count(symbol), c.count(' ')) == (2, 1):
+            if (c.count(symbol), c.count(' ')) == (b.boardSize-1, 1):
                 isBreak = True
                 break
         if(isBreak): #if found return
             return (c.index(' '), i)
 
         d = [b[i][i] for i in range(b.boardSize)] #checking 1st diagonal
-        if (d.count(symbol), d.count(' ')) == (2, 1):
+        if (d.count(symbol), d.count(' ')) == (b.boardSize-1, 1):
             return (d.index(' '), d.index(' ')) #if found return
 
         d = [b[b.boardSize-1-i][i] for i in range(b.boardSize)] #checking 2nd diagonal
-        if (d.count(symbol), d.count(' ')) == (2, 1):
+        if (d.count(symbol), d.count(' ')) == (b.boardSize-1, 1):
             return (b.boardSize-1-d.index(' '), d.index(' ')) #if found return            
 
         return (-1, -1)
